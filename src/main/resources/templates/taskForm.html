@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${task.id} == null ? 'Создать задачу' : 'Редактировать задачу'"></title>
+</head>
+<body>
+
+<h1 th:text="${task.id} == null ? 'Создать задачу' : 'Редактировать задачу'"></h1>
+
+<form action="#" th:action="@{${task.id} == null ? '/tasks/save' : '/tasks/update/' + ${task.id}}" th:object="${task}" method="post">
+    <label for="title">Название:</label>
+    <input type="text" id="title" th:field="*{title}" required/>
+
+    <label for="description">Описание:</label>
+    <input type="text" id="description" th:field="*{description}" required/>
+
+    <label for="createDate">Дата создания:</label>
+    <input type="datetime-local" id="createDate" th:field="*{createDate}" required/>
+
+    <label for="dueDate">Дата завершения:</label>
+    <input type="datetime-local" id="dueDate" th:field="*{dueDate}"/>
+
+    <button type="submit">Сохранить</button>
+</form>
+
+<a href="/tasks">Назад к списку задач</a>
+
+</body>
+</html>
