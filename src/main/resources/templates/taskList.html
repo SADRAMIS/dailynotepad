@@ -1,22 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon"/> <!-- Ссылка на favicon -->
     <title>Список задач</title>
     <style>
-        .strike{
-             text-decoration: line-through;
-             color: grey;
+        .strike {
+            text-decoration: line-through; /* Зачеркивание текста */
+            color: gray; /* Цвет зачеркинутого текста */
         }
     </style>
     <script>
-        function toggleCompletion(taskId){
-            const taskRow = document.getElementById('task-${taskId}');
+        // Функция для загрузки состояния выполнения из localStorage
+        function loadTaskStates() {
+            const tasks = JSON.parse(localStorage.getItem('tasksState')) || {};
+            for (const taskId in tasks) {
+                if (tasks[taskId]) {
+                    document.getElementById(`task-${taskId}`).querySelector('.task-title').classList.add('strike');
+                    document.getElementById(`task-${taskId}`).querySelector('.task-description').classList.add('strike');
+                    document.getElementById(`checkbox-${taskId}`).checked = true;
+                }
+            }
+        }
+
+        // Функция для переключения состояния выполнения задачи
+        function toggleCompletion(taskId) {
+            const taskRow = document.getElementById(`task-${taskId}`);
             const titleCell = taskRow.querySelector('.task-title');
             const descriptionCell = taskRow.querySelector('.task-description');
+            const checkbox = taskRow.querySelector('input[type="checkbox"]');
 
-            titleCell.classList.toggle('strike');
-            descriptionCell.classList.toggle('strike');
+            console.log(`Checkbox for task ${taskId} clicked. Checked: ${checkbox.checked}`);
+
+            if (checkbox.checked) {
+                titleCell.classList.add('strike');
+                descriptionCell.classList.add('strike');
+            } else {
+                titleCell.classList.remove('strike');
+                descriptionCell.classList.remove('strike');
+            }
+
+            const tasksState = JSON.parse(localStorage.getItem('tasksState')) || {};
+            tasksState[taskId] = checkbox.checked;
+            localStorage.setItem('tasksState', JSON.stringify(tasksState));
         }
+
+        window.onload = loadTaskStates;
     </script>
 </head>
 <body>
@@ -33,12 +61,13 @@
     </tr>
     <tr th:each="task : ${tasks}" id="task-${task.id}">
         <td th:text="${task.id}"></td>
-        <td class="task-title"th:text="${task.title}"></td>>
-        <td td class="task-description"th:text="${task.description}"></td>
+        <td class="task-title" th:text="${task.title}"></td>
+        <td class="task-description" th:text="${task.description}"></td>
         <td th:text="${task.createDate}"></td>
         <td th:text="${task.dueDate}"></td>
         <td>
-            <input type="checkbox"onclick="toggleCompletion(${task.id})"/>Выполнено
+            <!-- Чекбокс для временного зачеркивания -->
+            <input type="checkbox" id="checkbox-${task.id}" onclick="toggleCompletion(${task.id})"/> Выполнено
             <a th:href="@{/tasks/edit/{id}(id=${task.id})}">Редактировать</a>
             <a th:href="@{/tasks/delete/{id}(id=${task.id})}" onclick="return confirm('Вы уверены?');">Удалить</a>
         </td>
@@ -46,5 +75,6 @@
 </table>
 
 <a href="/tasks/new">Добавить новую задачу</a>
+
 </body>
 </html>
