@@ -3,6 +3,23 @@
 <head>
     <link rel="icon" href="/favicon.ico" type="image/x-icon"/> <!-- Ссылка на favicon -->
     <title th:text="${task.id} == null ? 'Создать задачу' : 'Редактировать задачу'"></title>
+    <script>
+        function formatDateTime(dateTime){
+            const options = {hour:'2-digit',minute:'2-digit',day:'2-digit',year:'numeric'};
+            const date = new Date(dateTime);
+            return date.toLocaleString('ru-RU', options).replace(',', ''); // Форматируем дату
+        }
+        function updateFormattedDateTime() {
+            const createDateInput = document.getElementById('createDate').value;
+            const dueDateInput = document.getElementById('dueDate').value;
+
+            const formattedCreateDate = formatDateTime(createDateInput);
+            const formattedDueDate = formatDateTime(dueDateInput);
+
+            document.getElementById('formattedCreateDate').innerText = formattedCreateDate;
+            document.getElementById('formattedDueDate').innerText = formattedDueDate;
+        }
+    </script>
 </head>
 <body>
 
@@ -16,15 +33,20 @@
     <input type="text" id="description" th:field="*{description}" required/>
 
     <label for="createDate">Дата создания:</label>
-    <input type="datetime-local" id="createDate" th:field="*{createDate}" required/>
+    <input type="datetime-local" id="createDate" th:field="*{createDate}" required onchange="updateFormattedDateTime()"/>
+    <span>Отформатированная дата создания: <span id="formattedCreateDate"></span></span>
 
     <label for="dueDate">Дата завершения:</label>
-    <input type="datetime-local" id="dueDate" th:field="*{dueDate}"/>
+    <input type="datetime-local" id="dueDate" th:field="*{dueDate}" required onchange="updateFormattedDateTime()"/>
+    <span>Отформатированная дата завершения: <span id="formattedDueDate"></span></span>
 
     <button type="submit">Сохранить</button>
 </form>
 
 <a href="/tasks">Назад к списку задач</a>
-
+<script>
+// Инициализация отформатированных значений при загрузке страницы
+document.addEventListener('DOMContentLoaded', updateFormattedDateTime);
+</script>
 </body>
 </html>

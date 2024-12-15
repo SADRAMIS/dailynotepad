@@ -9,43 +9,6 @@
             color: gray; /* Цвет зачеркинутого текста */
         }
     </style>
-    <script>
-        // Функция для загрузки состояния выполнения из localStorage
-        function loadTaskStates() {
-            const tasks = JSON.parse(localStorage.getItem('tasksState')) || {};
-            for (const taskId in tasks) {
-                if (tasks[taskId]) {
-                    document.getElementById(`task-${taskId}`).querySelector('.task-title').classList.add('strike');
-                    document.getElementById(`task-${taskId}`).querySelector('.task-description').classList.add('strike');
-                    document.getElementById(`checkbox-${taskId}`).checked = true;
-                }
-            }
-        }
-
-        // Функция для переключения состояния выполнения задачи
-        function toggleCompletion(taskId) {
-            const taskRow = document.getElementById(`task-${taskId}`);
-            const titleCell = taskRow.querySelector('.task-title');
-            const descriptionCell = taskRow.querySelector('.task-description');
-            const checkbox = taskRow.querySelector('input[type="checkbox"]');
-
-            console.log(`Checkbox for task ${taskId} clicked. Checked: ${checkbox.checked}`);
-
-            if (checkbox.checked) {
-                titleCell.classList.add('strike');
-                descriptionCell.classList.add('strike');
-            } else {
-                titleCell.classList.remove('strike');
-                descriptionCell.classList.remove('strike');
-            }
-
-            const tasksState = JSON.parse(localStorage.getItem('tasksState')) || {};
-            tasksState[taskId] = checkbox.checked;
-            localStorage.setItem('tasksState', JSON.stringify(tasksState));
-        }
-
-        window.onload = loadTaskStates;
-    </script>
 </head>
 <body>
 <h1>Список задач</h1>
@@ -59,12 +22,16 @@
         <th>Дата завершения</th>
         <th>Действия</th>
     </tr>
+
     <tr th:each="task : ${tasks}" id="task-${task.id}">
         <td th:text="${task.id}"></td>
         <td class="task-title" th:text="${task.title}"></td>
         <td class="task-description" th:text="${task.description}"></td>
-        <td th:text="${task.createDate}"></td>
-        <td th:text="${task.dueDate}"></td>
+
+        <!-- Отображение отформатированных дат -->
+        <td th:text="${task.formattedCreateDate}"></td>
+        <td th:text="${task.formattedDueDate}"></td>
+
         <td>
             <!-- Чекбокс для временного зачеркивания -->
             <input type="checkbox" id="checkbox-${task.id}" onclick="toggleCompletion(${task.id})"/> Выполнено

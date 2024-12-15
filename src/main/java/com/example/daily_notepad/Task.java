@@ -15,6 +15,26 @@ public class Task {
     private LocalDateTime createDate;
     private LocalDateTime dueDate;
 
+    @Transient // Указываем, что эти поля не должны сохраняться в базе данных
+    private String formattedCreateDate;
+    @Transient
+    private String formattedDueDate;
+
+    public String getFormattedCreateDate() {
+        return formattedCreateDate;
+    }
+
+    public void setFormattedCreateDate(String formattedCreateDate) {
+        this.formattedCreateDate = formattedCreateDate;
+    }
+
+    public String getFormattedDueDate() {
+        return formattedDueDate;
+    }
+
+    public void setFormattedDueDate(String formattedDueDate) {
+        this.formattedDueDate = formattedDueDate;
+    }
 
     public Long getId() {
         return id;
@@ -39,10 +59,6 @@ public class Task {
     public void setDescription(String description) {
         this.description = description;
     }
-
-
-
-
 
     public LocalDateTime getCreateDate() {
         return createDate;

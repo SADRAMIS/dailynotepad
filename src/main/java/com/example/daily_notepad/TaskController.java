@@ -4,9 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +25,15 @@ public class TaskController {
     public String getAllTasks(Model model) {
         try {
             List<Task> tasks = taskRepository.findAll();
-            model.addAttribute("tasks", tasks);
+            for (Task task : tasks) {
+                if (task.getCreateDate() != null) {
+                    task.setFormattedCreateDate(task.getCreateDate().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy")));
+                }
+                if (task.getDueDate() != null) {
+                    task.setFormattedDueDate(task.getDueDate().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy")));
+                }
+            }
+            model.addAttribute("tasks", tasks); // Передаем задачи с отформатированными датами
             return "taskList";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Ошибка при получении задач: " + e.getMessage());
@@ -32,14 +44,12 @@ public class TaskController {
     @GetMapping("/new")
     public String showNewTaskForm(Model model) {
         Task task = new Task();
-        task.setCreateDate(LocalDateTime.now()); // Устанавливаем текущее время
-        task.setDueDate(LocalDateTime.now().plusDays(1)); // Устанавливаем дату завершения на завтра
+        task.setCreateDate(LocalDateTime.now());
+        task.setDueDate(LocalDateTime.now().plusDays(1));
         model.addAttribute("task", task);
-        model.addAttribute("commonTasks", getCommonTasks()); // Получаем часто используемые задачи
+        model.addAttribute("commonTasks", getCommonTasks());
         return "taskForm";
     }
-
-
     private List<Task> getCommonTasks() {
         List<Task> commonTasks = new ArrayList<>();
 
@@ -66,11 +76,11 @@ public class TaskController {
     public String saveTask(@ModelAttribute Task task) {
         try {
             taskRepository.save(task);
+            return "redirect:/tasks";
         } catch (Exception e) {
             System.err.println("Ошибка при сохранении задачи: " + e.getMessage());
             return "error";
         }
-        return "redirect:/tasks";
     }
 
     @GetMapping("/edit/{id}")
@@ -91,10 +101,10 @@ public class TaskController {
     public String deleteTask(@PathVariable Long id) {
         try {
             taskRepository.deleteById(id);
+            return "redirect:/tasks";
         } catch (Exception e) {
             System.err.println("Ошибка при удалении задачи: " + e.getMessage());
             return "error";
         }
-        return "redirect:/tasks";
     }
 }
