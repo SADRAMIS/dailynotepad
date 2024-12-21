@@ -9,6 +9,18 @@
             color: gray; /* Цвет зачеркинутого текста */
         }
     </style>
+    <!-- новый код -->
+    <script>
+         function toggleCompletion(taskId) {
+             console.log(`Toggle completion for task ID: ${taskId}`);
+             const taskRow = document.getElementById(`task-${taskId}`);
+             if(taskRow){
+                taskRow.classList.toggle('strike');
+             }else{
+                console.error(`Element with ID task-${taskId} not found`);
+             }
+         }
+    </script>
 </head>
 <body>
 <h1>Список задач</h1>

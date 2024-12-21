@@ -19,7 +19,23 @@
             document.getElementById('formattedCreateDate').innerText = formattedCreateDate;
             document.getElementById('formattedDueDate').innerText = formattedDueDate;
         }
+         <!-- новый код -->
+         function toggleCompletion(taskId) {
+             console.log(`Toggle completion for task ID: ${taskId}`);
+             const taskRow = document.getElementById(`task-${taskId}`);
+             if(taskRow){
+                taskRow.classList.toggle('strike');
+             }else{
+                console.error(`Element with ID task-${taskId} not found`);
+             }
+         }
     </script>
+    <style>
+        .strike {
+         text-decoration: line-through;
+         color: gray;
+        }
+    </style>
 </head>
 <body>
 
